@@ -1,0 +1,50 @@
+/**
+@author: Danilo
+ */
+
+@import "reset";
+@import "mixin";
+
+body{
+  font-family: 'Roboto', sans-serif;
+  height: 100vh;
+  width: 100vw;
+  @include flex();
+  @include flex_align(center);
+  @include full_background_image( '../img/background.png' );
+}
+
+.form_container{
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: rgba(0, 0, 0, 0.4);
+  @include border_rad(10px);
+  .image_row{
+    margin-bottom: 20px;
+  }
+  .field_row, .result_row{
+    input{
+      text-align: center;
+    }
+  }
+  .result_row , .loading_row{
+    margin-top:20px;
+    display: none;
+  }
+  .result_row{
+    input{
+      margin-top:5px;
+      margin-bottom:5px;
+    }
+    #dismissAlertOverwrite{
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+  }
+
+}

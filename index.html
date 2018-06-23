@@ -1,0 +1,212 @@
+<html>
+    <head>
+        <title>Darwin Shortener</title>
+
+        
+        <!--FAVICON-->
+        <link rel="apple-touch-icon" sizes="57x57" href="public/favicon/apple-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="60x60" href="public/favicon/apple-icon-60x60.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="public/favicon/apple-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="public/favicon/apple-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="public/favicon/apple-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="public/favicon/apple-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="public/favicon/apple-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="public/favicon/apple-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="public/favicon/apple-icon-180x180.png" />
+        <link rel="icon" type="image/png" sizes="192x192"  href="public/favicon/android-icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="public/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="96x96" href="public/favicon/favicon-96x96.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="public/favicon/favicon-16x16.png" />
+        <link rel="manifest" href="public/favicon/manifest.json" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
+        <meta name="theme-color" content="#ffffff" />
+        
+        
+        <!--GOOGLE FONT-->
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+        <!--BOOSTRAP-->
+        <link rel="stylesheet" type="text/css" href="public/assets/bootstrap/4.0.0/css/bootstrap.min.css" />
+        <!--FONT AWESOME-->
+        <link rel="stylesheet" type="text/css" href="public/assets/fontawesome/4.7.0/css/font-awesome.min.css" />
+        <!--NOTY-->
+        <link rel="stylesheet" type="text/css" href="public/assets/noty/3.1.4/noty.min.css" />
+        <link rel="stylesheet" type="text/css" href="public/assets/noty/3.1.4/noty.min.css.map" />
+        <!--STYLES-->
+        <link rel="stylesheet" type="text/css" href="public/css/style.css" />
+    </head>
+    <body>
+
+
+
+        <div class="container form_container" >
+            <form id="short_url_form" action="?" method="GET">
+                <div class="row image_row">
+                    <div class="col text-center">
+                        <img width="125px" src="public/img/darwin-zone.png" title="Darwin Zone" alt="Darwin Zone" />
+                    </div>
+                </div>
+                <div class="row field_row">
+                    <div class="col">
+                        <div class="form-group">
+                            <input required type="url" class="form-control" id="input_url" aria-describedby="emailHelp" placeholder="URL" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row button_row">
+                    <div class="col text-center">
+                        <button type="submit" class="btn btn-info"><i class="fa fa-send"></i> Shorten URL</button>
+                    </div>
+                </div>
+
+                <div class="row loading_row">
+                    <div class="col text-center">
+                        <img src="public/img/loading.gif" />
+                    </div>
+                </div>
+
+                <div class="row result_row">
+                    <div class="col">
+                        <div class="alert alert-success text-center" role="alert">
+                            <button id="dismissAlertOverwrite" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <p>
+                                Your New URL is:
+                                <br />
+                                <div class="form-group">
+                                    <input type="text" readonly="readonly" class="form-control" id="result_a" aria-describedby="emailHelp" placeholder="URL" />
+                                </div>
+                                <button class="btn btn-info" id="copyURL">Copy URL to Clipboard</button>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+
+    <!--JQUERY-->
+    <script type="text/javascript" src="public/assets/jquery/3.3.1/jquery.min.js"></script>
+    <!--BOOTSTAP-->
+    <script type="text/javascript" src="public/assets/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!--NOTY-->
+    <script type="text/javascript" src="public/assets/noty/3.1.4/noty.min.js"></script>
+    <!--SCRIPTS-->
+    <script type="text/javascript">
+
+        // VARIABLES
+        var api_url         =   'yourls-api.php'; // The API URL
+        var signature       =   '05e2685fc7'; // The SIGNATURE
+        var action          =   'shorturl';
+        var format          =   'json';
+        var input           =   $( '#input_url' );
+        var timeout         =   4000;
+        var theme           =   'metroui';
+        var error_message   =   'Error Generating the ShortURL. Please check the input URL and try again later';
+        var success_message =   'URL Generated!';
+        var copied_message  =   'The new URL was copied to the clipboard';
+        var copied_error    =   'The URL was not copied to the clipboard. Your browser does not support this funcionality.';
+
+        function hideResult(){
+            $( ".result_row" ).hide();
+        }
+        function showResult(){
+            $( ".result_row" ).show();
+        }
+        function hideLoading(){
+            $( ".loading_row" ).hide();
+        }
+        function showLoading(){
+            $( ".loading_row" ).show();
+        }
+        function setUpNewUrl( url ){
+            $( "#result_a" ).html( url );
+            $( "#result_a" ).val( url );
+            $( "#result_a" ).attr( 'href' , url );
+        }
+
+        function showNoty( t , m ){
+            new Noty({
+                theme: theme,
+                type: t,
+                text: m,
+                timeout : timeout,
+                killer: true
+            }).show();
+        }
+
+        function bindButtonClose(){
+            $( "#dismissAlertOverwrite" ).click(function( e ){
+                hideResult();
+                e.preventDefault();
+                return false;
+            });
+        }
+        function bindForm(){
+            $( "#short_url_form" ).submit(function( e ){
+
+                hideResult();
+                showLoading();
+                var response = $.get( api_url, {
+                        /*username: "your_username",
+                        password: "your_password",*/
+                        signature:  signature,
+                        action:     action,
+                        format:     format,
+                        url:        input.val()
+                    },
+                    // callback function that will deal with the server response
+                    function( data) {
+                        hideLoading();
+                        // now do something with the data, for instance show new short URL:
+                        input.val('');
+                        console.log(data.shorturl);
+                        showNoty( 'success', success_message );
+                        setUpNewUrl( data.shorturl );
+                        showResult();
+                    }
+                ).fail(function() {
+                    hideLoading();
+                    console.error( 'Error generating the URL' );
+                    showNoty( 'error', error_message);
+                    hideResult();
+                });
+                return false;
+            });
+        }
+
+        function bindCopy(){
+
+            $( "#copyURL" ).click(function( e ){
+                var t = document.getElementById('result_a');
+                t.innerHTML = $( this ).val();
+                t.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successfully' : 'unsuccessfully';
+                    console.log('text coppied ' + msg);
+                    showNoty('success',copied_message);
+                } catch (err) {
+                    console.log('Unable to copy text');
+                    showNoty('error',copied_error);
+                }
+                e.preventDefault();
+                // e.cancel();
+                return false;
+            });
+
+
+        }
+
+        $( document ).ready(function(){
+            bindForm();
+            bindButtonClose();
+            bindCopy();
+            hideLoading();
+            hideResult();
+        });
+
+    </script>
+</html>
